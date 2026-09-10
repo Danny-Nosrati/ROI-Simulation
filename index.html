@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROI Simulation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="navbar">
+            <div class="logo">
+                <img src="images/fabrisight_logo.png" alt="FabriSight" width="24" height="24" style="margin-right:8px; border-radius:4px;">
+                ROI <span>Simulation</span>
+            </div>
+            <div class="status-badge live" id="status-badge">System Online</div>
+        </header>
+
+        <!-- PAGE: Collect -->
+        <main class="page active" id="page-collect">
+            <div class="collect-container">
+                <div class="collect-header">
+                    <h1>Configure Your Line</h1>
+                    <p class="collect-subtitle">Select your product and set your production parameters to begin the simulation.</p>
+                </div>
+
+                <!-- Product Selection -->
+                <div class="product-selection">
+                    <h2>Pick the item closest to what you produce</h2>
+                    <div class="product-grid" id="product-grid">
+                        <button class="product-card active" data-product="chocolate">
+                            <img src="images/chocolate.png" alt="Chocolate Truffle">
+                            <span>Chocolate Truffle</span>
+                        </button>
+                        <button class="product-card" data-product="bread">
+                            <img src="images/bread.png" alt="Bread Loaf">
+                            <span>Bread Loaf</span>
+                        </button>
+                        <button class="product-card" data-product="bun">
+                            <img src="images/bun.png" alt="Burger Bun">
+                            <span>Burger Bun</span>
+                        </button>
+                        <button class="product-card" data-product="patty">
+                            <img src="images/patty.png" alt="Burger Patty">
+                            <span>Burger Patty</span>
+                        </button>
+                        <button class="product-card" data-product="cookie">
+                            <img src="images/cookie.png" alt="Cookie">
+                            <span>Cookie</span>
+                        </button>
+                        <button class="product-card" data-product="tortilla">
+                            <img src="images/tortilla.png" alt="Tortilla">
+                            <span>Tortilla</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Parameters -->
+                <div class="params-section">
+                    <div class="param-card">
+                        <div class="param-header">
+                            <label for="rng-speed">Line Speed</label>
+                            <span class="param-value" id="lbl-speed">100 ppm</span>
+                        </div>
+                        <input type="range" id="rng-speed" class="slider-modern" min="20" max="600" value="100" step="5">
+                        <div class="param-range">
+                            <span>20 ppm</span>
+                            <span>600 ppm</span>
+                        </div>
+                    </div>
+
+                    <div class="param-card">
+                        <div class="param-header">
+                            <label for="rng-hours">Production Hours</label>
+                            <span class="param-value" id="lbl-hours">12h</span>
+                        </div>
+                        <input type="range" id="rng-hours" class="slider-modern" min="7" max="24" value="12" step="1">
+                        <div class="param-range">
+                            <span>7h</span>
+                            <span>24h</span>
+                        </div>
+                    </div>
+
+                    <div class="param-card">
+                        <div class="param-header">
+                            <label for="rng-margin">Margin Per Item</label>
+                            <span class="param-value" id="lbl-margin">$0.50</span>
+                        </div>
+                        <input type="range" id="rng-margin" class="slider-modern" min="0.5" max="50" value="0.5" step="0.5">
+                        <div class="param-range">
+                            <span>$0.50</span>
+                            <span>$50.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-run" id="btn-run">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    Run Simulation
+                </button>
+            </div>
+        </main>
+
+        <!-- PAGE: Show (Simulation) -->
+        <main class="page" id="page-show" style="flex-direction: column;">
+            <div class="top-nav-config">
+                <button class="btn-back" id="btn-back">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    New Configuration
+                </button>
+            </div>
+            <div class="show-layout">
+                <!-- Center: Conveyor Belt -->
+                <section class="conveyor-section">
+                    <div class="belt-wrapper">
+                        <div class="belt-container">
+                            <div class="belt-texture running"></div>
+                            <div class="belt" id="belt"></div>
+
+
+
+                            <div class="scanner-zone" id="scanner-zone">
+                                <div class="scanner-laser"></div>
+                                <div class="scanner-glow"></div>
+                            </div>
+
+                            <div id="downtime-overlay" class="overlay hidden">
+                                <div class="alert-box">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
+                                        stroke="var(--danger-red)" stroke-width="2">
+                                        <path
+                                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                                        </path>
+                                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                    </svg>
+                                    <h2>UNPLANNED DOWNTIME</h2>
+                                    <p>Line stopped. Calculating loss...</p>
+                                </div>
+                            </div>
+
+                            <div id="maintenance-overlay" class="overlay hidden"
+                                style="background: rgba(15, 23, 42, 0.9);">
+                                <div class="alert-box"
+                                    style="border-color: var(--accent-blue); box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
+                                        stroke="var(--accent-blue)" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                    <h2 style="color: var(--accent-blue);">BREAK</h2>
+                                    <p>System maintenance / shift break. No losses accumulated.</p>
+                                </div>
+                            </div>
+
+                            <div id="changeover-overlay" class="overlay hidden"
+                                style="background: rgba(15, 23, 42, 0.9);">
+                                <div class="alert-box"
+                                    style="border-color: #f59e0b; box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
+                                        stroke="#f59e0b" stroke-width="2">
+                                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                                    </svg>
+                                    <h2 style="color: #f59e0b;">CHANGE OVER LOSS</h2>
+                                    <p>Missing product lines. Calculating loss...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Clock relocated -->
+                    <div class="sim-clock-container">
+                        <div class="sim-clock" id="sim-clock">
+                            <span class="clock-num clock-12">60</span>
+                            <span class="clock-num clock-3">15</span>
+                            <span class="clock-num clock-6">30</span>
+                            <span class="clock-num clock-9">45</span>
+                            <div class="clock-hand" id="clock-hand"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Right: Analytics Panels -->
+                <aside class="analytics-panel">
+                    <div class="card analytics-card">
+                        <div class="card-header">
+                            <h3>Running Loss</h3>
+                            <span class="live-dot"></span>
+                        </div>
+
+                        <div class="metric-row">
+                            <div class="metric-box neutral">
+                                <span class="metric-label">Units Missing</span>
+                                <span class="metric-val" id="live-missing">0</span>
+                            </div>
+                            <div class="metric-box neutral">
+                                <span class="metric-label">Downtime</span>
+                                <span class="metric-val" id="live-downtime">0s</span>
+                            </div>
+                            <div class="metric-box danger">
+                                <span class="metric-label">Value Lost</span>
+                                <span class="metric-val" id="live-value-lost">$0</span>
+                            </div>
+                        </div>
+
+                        <div id="fabrisight-cta" class="cta-inline hidden">
+                            <div class="cta-content">
+                                <h3>Process Optimization</h3>
+                                <p>FabriSight can help you fix this and reclaim your lost revenue.</p>
+                                <a href="https://fabrisight.com" target="_blank" class="btn-cta-action" style="text-decoration:none; display:inline-block;">Learn More</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Annual Loss (bottom right) -->
+                    <div class="card projection-card">
+                        <div class="card-header">
+                            <h3>Annual Loss</h3>
+                            <span class="badge">Estimated</span>
+                        </div>
+
+                        <div class="metric-row">
+                            <div class="metric-box neutral">
+                                <span class="metric-label">Units Missed</span>
+                                <span class="metric-val" id="annual-missing">0</span>
+                            </div>
+                            <div class="metric-box neutral">
+                                <span class="metric-label">Downtime</span>
+                                <span class="metric-val" id="annual-downtime">0 hrs</span>
+                            </div>
+                            <div class="metric-box danger">
+                                <span class="metric-label">Est. $ Loss</span>
+                                <span class="metric-val" id="annual-loss">$0</span>
+                            </div>
+                        </div>
+
+                        <!-- Industry Stats -->
+                        <div class="industry-stats-container mt-4">
+                            <h4 class="text-sm font-semibold text-secondary">Industry Average Hypothesis</h4>
+                            <div class="stat-row">
+                                <span class="stat-label">Lost to Missing:</span>
+                                <span class="stat-val">20%</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Lost to Downtime:</span>
+                                <span class="stat-val">15%</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Changeover Loss:</span>
+                                <span class="stat-val">5%</span>
+                            </div>
+                            <div class="stat-row highlight">
+                                <span class="stat-label">Total Loss %:</span>
+                                <span class="stat-val" style="color:var(--danger-red)">40%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </aside>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
