@@ -35,4 +35,4 @@ Open `index.html` in your browser, or serve with a local dev server.
 
 ## Built For
 
-This tool was built as a sales engineering asset for **FabriSight**, a computer vision startup focused on AI-powered quality inspection for food manufacturing lines.
+This tool was built as a sales engineering asset for **FabriSight**, a computer vision startup focused on AI-powered inspection for food manufacturing lines.
